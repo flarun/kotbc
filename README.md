@@ -1,4 +1,4 @@
-# kotbci
+# kotbc - king of the bell curve
 
 ## Simplest AI Folder
 
