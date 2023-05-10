@@ -124,3 +124,4 @@ if __name__ == "__main__":
     model_name = f"simplest-ai_DATA{data_folder}_E{epochs}_BS{batch_size}_LR{learning_rate}_{now}.pth"
     model_path = "models/" + model_name
     torch.save(model.state_dict(), model_path)
+    print(f"Model saved to {model_path}\n with name {model_name}")
