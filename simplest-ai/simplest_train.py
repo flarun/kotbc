@@ -104,8 +104,6 @@ def result_to_array(result):
 
 
 if __name__ == "__main__":
-    # for i, arg in enumerate(sys.argv):
-    #     print(f"Argument {i:>6}: {arg}")
     # check if the directory models/ exists, if not create it
     if not os.path.exists("models/"):
         os.makedirs("models/")
@@ -120,8 +118,9 @@ if __name__ == "__main__":
     learning_rate = float(sys.argv[4])
     train_model(model, dataset, epochs, batch_size, learning_rate)
     # After training the model
-    now = datetime.datetime.now()
-    model_name = f"simplest-ai_DATA{data_folder}_E{epochs}_BS{batch_size}_LR{learning_rate}_{now}.pth"
+    # get the current date and time with underscores instead of spaces
+    dt_string = datetime.datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
+    model_name = f"simplest-ai_DATA{data_folder}_E{epochs}_BS{batch_size}_LR{learning_rate}_{dt_string}.pth"
     model_path = "models/" + model_name
     torch.save(model.state_dict(), model_path)
     print(f"Model saved to {model_path}\n with name {model_name}")
