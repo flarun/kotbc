@@ -1,3 +1,6 @@
+import time
+import datetime
+import sys
 import os
 import chess.pgn
 import numpy as np
@@ -101,13 +104,20 @@ def result_to_array(result):
 
 
 if __name__ == "__main__":
-    data_folder = "simplest-ai/database/"
+    # for i, arg in enumerate(sys.argv):
+    #     print(f"Argument {i:>6}: {arg}")
+    if len(sys.argv) != 5:
+        print("Usage: python simplest_train.py <data_folder> <epochs> <batch_size> <learning_rate>")
+        sys.exit(1)
+    data_folder = sys.argv[1]
     dataset = ChessDataset(data_folder)
     model = ChessModel()
-    epochs = 100
-    batch_size = 64
-    learning_rate = 0.001
+    epochs = int(sys.argv[2])
+    batch_size = int(sys.argv[3])
+    learning_rate = float(sys.argv[4])
     train_model(model, dataset, epochs, batch_size, learning_rate)
     # After training the model
-    model_path = "simplest-ai/models/simplest_elite_100_64_0-001.pth"
+    now = datetime.datetime.now()
+    model_name = f"simplest-ai_DATA{data_folder}_E{epochs}_BS{batch_size}_LR{learning_rate}_{now}.pth"
+    model_path = "models/" + model_name
     torch.save(model.state_dict(), model_path)
