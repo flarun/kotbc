@@ -15,17 +15,29 @@ Once you found your .pgn files, collect them into a folder and store it inside o
 The name of the folder is now the `data_folder` variale you will specify later.
 
 Navigate to the simplest-ai folder
+
 ```sh
 cd simplest-ai/
 ```
 
 To train, specify the arguments in the command line:
+
 ```sh
 python3 simplest_train.py <data_folder> <epochs> <batch_size> <learning_rate>
 ```
+
 A good set of values to start with is the following:
+
 ```sh
 python3 simplest_train.py <data_folder> 200 64 0.001
 ```
 
 The trained model will be stored at `simplest-ai/models/`, with the name in the following descriptive formatting: `simplest-ai*DATA{data_folder}\_E{epochs}\_BS{batch_size}\_LR{learning_rate}*{now}.pth`
+
+### How to play against your models
+
+TODO
+
+### How to evaluate your models against Stockfish
+
+TODO
