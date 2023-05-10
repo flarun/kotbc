@@ -10,18 +10,18 @@ In order to train you will need a collection of .pgn files of relatively good ch
 
 A recommended resource is the following: [https://database.nikonoel.fr/], Credits go to https://lichess.org/@/nikonoel.
 
-Once you found your .pgn files, collect them into a folder and store it inside of 'simplest-ai/'.
+Once you found your .pgn files, collect them into a folder and store it inside of `simplest-ai/`.
 
-The name of the folder is now the 'data_folder' variale you will specify later.
+The name of the folder is now the `data_folder` variale you will specify later.
 
 Navigate to the simplest-ai folder
-'''
+```sh
 cd simplest-ai/
-'''
+```
 
 To train, specify the arguments in the command line:
-'''
+```sh
 python simplest_train.py <data_folder> <epochs> <batch_size> <learning_rate>
-'''
+```
 
-The trained model will be stored at 'simplest-ai/models/', with the name in the following descriptive formatting: 'simplest-ai*DATA{data_folder}\_E{epochs}\_BS{batch_size}\_LR{learning_rate}*{now}.pth'
+The trained model will be stored at `simplest-ai/models/`, with the name in the following descriptive formatting: `simplest-ai*DATA{data_folder}\_E{epochs}\_BS{batch_size}\_LR{learning_rate}*{now}.pth`
