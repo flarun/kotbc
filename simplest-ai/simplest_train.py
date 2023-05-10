@@ -106,6 +106,9 @@ def result_to_array(result):
 if __name__ == "__main__":
     # for i, arg in enumerate(sys.argv):
     #     print(f"Argument {i:>6}: {arg}")
+    # check if the directory models/ exists, if not create it
+    if not os.path.exists("models/"):
+        os.makedirs("models/")
     if len(sys.argv) != 5:
         print("Usage: python simplest_train.py <data_folder> <epochs> <batch_size> <learning_rate>")
         sys.exit(1)
