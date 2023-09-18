@@ -47,11 +47,3 @@ python3 simplest_train.py <data_folder> 200 64 0.001
 ```
 
 The trained model will be stored at `simplest-ai/models/`, with the name in the following descriptive formatting: `simplest-ai*DATA{data_folder}\_E{epochs}\_BS{batch_size}\_LR{learning_rate}*{now}.pth`
-
-### How to play against your models
-
-TODO: UI for the chess match between user and AI
-
-### How to evaluate your models against Stockfish
-
-TODO: CSV file writing of results.
