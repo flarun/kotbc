@@ -7,22 +7,30 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import torch_directml  # Microsoft's framework for AMD GPUs
 from torch.utils.data import Dataset, DataLoader
 
-
-# Define the chess dataset class
 class ChessDataset(Dataset):
     def __init__(self, data_folder):
         self.games = []
         for filename in os.listdir(data_folder):
+            if not filename.endswith(".pgn"):
+                continue
             filepath = os.path.join(data_folder, filename)
             with open(filepath, "r") as f:
-                game = chess.pgn.read_game(f)
-                result = game.headers["Result"]
-                board = game.board()
-                for move in game.mainline_moves():
-                    self.games.append((board.copy(), result))
-                    board.push(move)
+                while True:
+                    game = chess.pgn.read_game(f)
+                    if game is None:
+                        break
+                    
+                    result = game.headers.get("Result", "*")
+                    if result not in ["1-0", "0-1", "1/2-1/2"]:
+                        continue
+                        
+                    board = game.board()
+                    for move in game.mainline_moves():
+                        self.games.append((board.copy(), result))
+                        board.push(move)
 
     def __len__(self):
         return len(self.games)
@@ -33,8 +41,6 @@ class ChessDataset(Dataset):
         y = np.array(result_to_array(result)).astype(np.float32)
         return x, y
 
-
-# Define the neural network
 class ChessModel(nn.Module):
     def __init__(self):
         super().__init__()
@@ -49,16 +55,17 @@ class ChessModel(nn.Module):
         x = self.fc2(x)
         return x
 
-
-# Define the training function
-def train_model(model, dataset, epochs, batch_size, learning_rate):
+def train_model(model, dataset, epochs, batch_size, learning_rate, device):
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     criterion = nn.BCEWithLogitsLoss()
-
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
     for epoch in range(epochs):
         for x, y in dataloader:
+            # Push data to the AMD GPU
+            x = x.to(device)
+            y = y.to(device)
+            
             optimizer.zero_grad()
             y_pred = model(x)
             loss = criterion(y_pred, y)
@@ -68,8 +75,6 @@ def train_model(model, dataset, epochs, batch_size, learning_rate):
         if epoch % 10 == 0:
             print(f"Epoch {epoch}, Loss: {loss.item():.4f}")
 
-
-# Define the utility functions for converting chess data to arrays
 def board_to_array(board):
     rows = []
     for i in range(8):
@@ -93,7 +98,6 @@ def board_to_array(board):
         feature_planes[piece_index * 2 + 1, i // 8, i % 8] = 1
     return feature_planes
 
-
 def result_to_array(result):
     if result == "1/2-1/2":
         return [0.5]
@@ -102,25 +106,37 @@ def result_to_array(result):
     elif result == "0-1":
         return [0.0]
 
-
 if __name__ == "__main__":
-    # check if the directory models/ exists, if not create it
     if not os.path.exists("models/"):
         os.makedirs("models/")
     if len(sys.argv) != 5:
-        print("Usage: python simplest_train.py <data_folder> <epochs> <batch_size> <learning_rate>")
+        print("Usage: python train.py <data_folder> <epochs> <batch_size> <learning_rate>")
         sys.exit(1)
+        
     data_folder = sys.argv[1]
-    dataset = ChessDataset(data_folder)
-    model = ChessModel()
     epochs = int(sys.argv[2])
     batch_size = int(sys.argv[3])
     learning_rate = float(sys.argv[4])
-    train_model(model, dataset, epochs, batch_size, learning_rate)
-    # After training the model
-    # get the current date and time with underscores instead of spaces
+    
+    # Initialize the AMD GPU
+    device = torch_directml.device()
+    print(f"Using hardware accelerator: {torch_directml.device_name(device.index)}")
+    
+    print(f"Loading dataset from {data_folder}...")
+    dataset = ChessDataset(data_folder)
+    print(f"Dataset loaded. Found {len(dataset)} positions.")
+    
+    # Push the model to the AMD GPU
+    model = ChessModel().to(device)
+    
+    print("Starting training...")
+    train_model(model, dataset, epochs, batch_size, learning_rate, device)
+    
     dt_string = datetime.datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
-    model_name = f"simplest-ai_DATA{data_folder}_E{epochs}_BS{batch_size}_LR{learning_rate}_{dt_string}.pth"
-    model_path = "models/" + model_name
-    torch.save(model.state_dict(), model_path)
-    print(f"Model saved to {model_path}\n with name {model_name}")
+    clean_folder_name = data_folder.replace("/", "").replace("\\", "")
+    model_name = f"kotbc_DATA{clean_folder_name}_E{epochs}_BS{batch_size}_LR{learning_rate}_{dt_string}.pth"
+    model_path = os.path.join("models", model_name)
+    
+    # Pull model back to CPU before saving to ensure compatibility when playing
+    torch.save(model.cpu().state_dict(), model_path)
+    print(f"Model saved to {model_path}")
