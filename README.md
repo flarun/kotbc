@@ -113,6 +113,7 @@ python train.py data/ 100 64 0.001
 
 ## 6. Repository Layout
 
+```
 kotbc/
 ├── .gitignore              # Ignores .pgn datasets, .pth weights, and caches
 ├── requirements.txt        # Runtime dependencies (chess, numpy, torch-directml)
@@ -124,3 +125,4 @@ kotbc/
     ├── train.py            # Dataset parser, network architecture, and training pipeline
     ├── play.py             # Interactive CLI interface for Human vs. AI games
     └── play_stockfish.py   # Benchmark script for automated games against Stockfish
+```
