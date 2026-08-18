@@ -114,12 +114,13 @@ python train.py data/ 100 64 0.001
 ## 6. Repository Layout
 
 kotbc/
-├── .gitignore # Ignores .pgn datasets, .pth weights, and **pycache**
-├── requirements.txt # Runtime dependencies (chess, numpy, torch-directml)
-├── README.md # Technical overview & execution manual
+├── .gitignore              # Ignores .pgn datasets, .pth weights, and caches
+├── requirements.txt        # Runtime dependencies (chess, numpy, torch-directml)
+├── README.md               # Technical overview & execution manual
+├── logo.jpg                # Project branding
 └── chess_ai/
-├── data/ # Local directory for raw .pgn archives
-├── models/ # Target output folder for serialized .pth weights
-├── train.py # Dataset parser, network architecture, and training pipeline
-├── play.py # Interactive CLI interface for Human vs. AI games
-└── play_stockfish.py # Benchmark script for automated games against Stockfish
+    ├── data/               # Local directory for raw .pgn archives
+    ├── models/             # Target output folder for serialized .pth weights
+    ├── train.py            # Dataset parser, network architecture, and training pipeline
+    ├── play.py             # Interactive CLI interface for Human vs. AI games
+    └── play_stockfish.py   # Benchmark script for automated games against Stockfish
