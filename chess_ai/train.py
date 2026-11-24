@@ -76,17 +76,14 @@ def train_model(model, dataset, epochs, batch_size, learning_rate, device):
             print(f"Epoch {epoch}, Loss: {loss.item():.4f}")
 
 def board_to_array(board):
-    rows = []
+    flat_rows = []
     for i in range(8):
-        row = []
         for j in range(8):
             piece = board.piece_at(chess.square(i, j))
             if piece is not None:
-                row.append(piece.symbol().lower())
+                flat_rows.append(piece.symbol())
             else:
-                row.append(".")
-        rows.append(row)
-    flat_rows = [item for sublist in rows for item in sublist]
+                flat_rows.append(".")
     feature_planes = np.zeros((12, 8, 8), dtype=np.float32)
     for i, char in enumerate(flat_rows):
         if char == ".":
